@@ -9,12 +9,14 @@ function App() {
     setLoading(true);
     setResult(null);
 
-    const res = await fetch(fetch("https://meetwise-qlpi.onrender.com/extract/final"),
-{
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcript }),
-    });
+    const res = await fetch(
+      "https://meetwise-qlpi.onrender.com/extract/final",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript }),
+      }
+    );
 
     const data = await res.json();
     setResult(data);
@@ -42,12 +44,92 @@ function App() {
 
         {result && (
           <div className="output">
-            <h3>Extracted Output</h3>
-            <pre>{JSON.stringify(result, null, 2)}</pre>
+            {/* DECISIONS */}
+            <Section title="Decisions">
+              {result.decisions.length > 0 ? (
+                result.decisions.map((d, i) => (
+                  <Item
+                    key={i}
+                    text={d.text}
+                    meta={`Confidence: ${Math.round(d.confidence * 100)}%`}
+                  />
+                ))
+              ) : (
+                <Empty text="No high-confidence decisions found." />
+              )}
+            </Section>
+
+            {/* ACTION ITEMS */}
+            <Section title="Action Items">
+              {result.action_items.length > 0 ? (
+                result.action_items.map((a, i) => (
+                  <Item
+                    key={i}
+                    text={`${a.task}`}
+                    meta={`Owner: ${a.owner || "Unassigned"} • Deadline: ${
+                      a.deadline || "Not specified"
+                    } • Confidence: ${Math.round(a.confidence * 100)}%`}
+                  />
+                ))
+              ) : (
+                <Empty text="No clear action items found." />
+              )}
+            </Section>
+
+            {/* BLOCKERS */}
+            <Section title="Blockers">
+              {result.blockers.length > 0 ? (
+                result.blockers.map((b, i) => (
+                  <Item
+                    key={i}
+                    text={b.text}
+                    meta={`Confidence: ${Math.round(b.confidence * 100)}%`}
+                  />
+                ))
+              ) : (
+                <Empty text="No blockers identified." />
+              )}
+            </Section>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+/* Reusable components */
+
+function Section({ title, children }) {
+  return (
+    <div style={{ marginTop: "28px" }}>
+      <h3 style={{ marginBottom: "12px" }}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Item({ text, meta }) {
+  return (
+    <div
+      style={{
+        background: "#f8fafc",
+        padding: "14px",
+        borderRadius: "10px",
+        marginBottom: "10px",
+        border: "1px solid #e2e8f0",
+      }}
+    >
+      <div style={{ fontWeight: 600 }}>{text}</div>
+      <div style={{ fontSize: "13px", color: "#64748b", marginTop: "4px" }}>
+        {meta}
+      </div>
+    </div>
+  );
+}
+
+function Empty({ text }) {
+  return (
+    <div style={{ color: "#94a3b8", fontSize: "14px" }}>{text}</div>
   );
 }
 
