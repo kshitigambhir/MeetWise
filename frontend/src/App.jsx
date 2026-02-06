@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 function App() {
   const [transcript, setTranscript] = useState("");
@@ -10,7 +11,7 @@ function App() {
     setResult(null);
 
     const res = await fetch(
-      "https://meetwise-qlpi.onrender.com/extract/final",
+      "http://127.0.0.1:8000/extract/final",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,85 +25,105 @@ function App() {
   };
 
   return (
-    <div className="page">
-      <div className="card">
-        <h1>Decision Minutes Copilot</h1>
-        <p className="subtitle">
-          Turn meeting transcripts into clear decisions and action items.
-        </p>
+    <div className="app">
+      {/* HEADER */}
+      <header className="header">
+        <h2>MeetWise</h2>
+        <div className="icons">
+          <a
+            href="https://github.com/kshitigambhir"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaGithub />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/kshiti-gambhir-bb5b8827b/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaLinkedin />
+          </a>
+        </div>
+      </header>
 
-        <label>Meeting Transcript</label>
-        <textarea
-          placeholder="Paste meeting transcript here..."
-          value={transcript}
-          onChange={(e) => setTranscript(e.target.value)}
-        />
+      {/* MAIN */}
+      <main className="page">
+        <div className="card">
+          <h1>Turn meetings into clear decisions</h1>
+          <p className="subtitle">
+            Paste a meeting transcript and get decisions, action items, and blockers.
+          </p>
 
-        <button onClick={extractMinutes} disabled={loading || !transcript}>
-          {loading ? "Extracting..." : "Extract Action Items"}
-        </button>
+          <label>Meeting Transcript</label>
+          <textarea
+            placeholder="Paste meeting transcript here..."
+            value={transcript}
+            onChange={(e) => setTranscript(e.target.value)}
+          />
 
-        {result && (
-          <div className="output">
-            {/* DECISIONS */}
-            <Section title="Decisions">
-              {result.decisions.length > 0 ? (
-                result.decisions.map((d, i) => (
-                  <Item
-                    key={i}
-                    text={d.text}
-                    meta={`Confidence: ${Math.round(d.confidence * 100)}%`}
-                  />
-                ))
-              ) : (
-                <Empty text="No high-confidence decisions found." />
-              )}
-            </Section>
+          <button onClick={extractMinutes} disabled={loading || !transcript}>
+            {loading ? "Extracting..." : "Extract Action Items"}
+          </button>
 
-            {/* ACTION ITEMS */}
-            <Section title="Action Items">
-              {result.action_items.length > 0 ? (
-                result.action_items.map((a, i) => (
-                  <Item
-                    key={i}
-                    text={`${a.task}`}
-                    meta={`Owner: ${a.owner || "Unassigned"} • Deadline: ${
-                      a.deadline || "Not specified"
-                    } • Confidence: ${Math.round(a.confidence * 100)}%`}
-                  />
-                ))
-              ) : (
-                <Empty text="No clear action items found." />
-              )}
-            </Section>
+          {result && (
+            <div className="output">
+              <Section title="Decisions">
+                {result.decisions.length ? (
+                  result.decisions.map((d, i) => (
+                    <Item
+                      key={i}
+                      text={d.text}
+                      meta={`Confidence: ${Math.round(d.confidence * 100)}%`}
+                    />
+                  ))
+                ) : (
+                  <Empty text="No high-confidence decisions found." />
+                )}
+              </Section>
 
-            {/* BLOCKERS */}
-            <Section title="Blockers">
-              {result.blockers.length > 0 ? (
-                result.blockers.map((b, i) => (
-                  <Item
-                    key={i}
-                    text={b.text}
-                    meta={`Confidence: ${Math.round(b.confidence * 100)}%`}
-                  />
-                ))
-              ) : (
-                <Empty text="No blockers identified." />
-              )}
-            </Section>
-          </div>
-        )}
-      </div>
+              <Section title="Action Items">
+                {result.action_items.length ? (
+                  result.action_items.map((a, i) => (
+                    <Item
+                      key={i}
+                      text={a.task}
+                      meta={`Owner: ${a.owner || "Unassigned"} • Deadline: ${
+                        a.deadline || "N/A"
+                      }`}
+                    />
+                  ))
+                ) : (
+                  <Empty text="No action items found." />
+                )}
+              </Section>
+
+              <Section title="Blockers">
+                {result.blockers.length ? (
+                  result.blockers.map((b, i) => (
+                    <Item key={i} text={b.text} />
+                  ))
+                ) : (
+                  <Empty text="No blockers identified." />
+                )}
+              </Section>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        Built with ❤️ using React & FastAPI
+      </footer>
     </div>
   );
 }
 
-/* Reusable components */
-
 function Section({ title, children }) {
   return (
-    <div style={{ marginTop: "28px" }}>
-      <h3 style={{ marginBottom: "12px" }}>{title}</h3>
+    <div className="section">
+      <h3>{title}</h3>
       {children}
     </div>
   );
@@ -110,27 +131,15 @@ function Section({ title, children }) {
 
 function Item({ text, meta }) {
   return (
-    <div
-      style={{
-        background: "#f8fafc",
-        padding: "14px",
-        borderRadius: "10px",
-        marginBottom: "10px",
-        border: "1px solid #e2e8f0",
-      }}
-    >
-      <div style={{ fontWeight: 600 }}>{text}</div>
-      <div style={{ fontSize: "13px", color: "#64748b", marginTop: "4px" }}>
-        {meta}
-      </div>
+    <div className="item">
+      <strong>{text}</strong>
+      {meta && <div className="meta">{meta}</div>}
     </div>
   );
 }
 
 function Empty({ text }) {
-  return (
-    <div style={{ color: "#94a3b8", fontSize: "14px" }}>{text}</div>
-  );
+  return <div className="empty">{text}</div>;
 }
 
 export default App;
