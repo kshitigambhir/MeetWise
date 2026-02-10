@@ -9,9 +9,9 @@ function App() {
   const extractMinutes = async () => {
     setLoading(true);
     setResult(null);
-
-    const res = await fetch(
-      "http://127.0.0.1:8000/extract/final",
+//fetch(
+      //"http://127.0.0.1:8000/extract/final"
+    const res = await fetch("https://meetwise-qlpi.onrender.com/extract/final",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,6 +140,6 @@ function Item({ text, meta }) {
 
 function Empty({ text }) {
   return <div className="empty">{text}</div>;
-}
+ }
 
 export default App;
