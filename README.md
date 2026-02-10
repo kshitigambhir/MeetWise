@@ -59,16 +59,15 @@ The backend always returns structured JSON for reliability, while the frontend t
 
 ## Sample Input
 
-Neha: Today we need to finalize the scope for the analytics dashboard.  
-Rahul: We can deliver the first version by March 15.  
-Neha: Okay, let’s lock March 15 as the release date.  
-Rahul: I will implement user activity charts by March 10.  
-Neha: Performance testing is pending until we get production data.
+Rohit: Let’s finalize May 5 as the release date for the new dashboard.
+Anita: I will complete the UI implementation by May 2.
+Rohit: User testing is still pending due to limited feedback.
 
 ---
 
 ## Sample Output
-<img width="1890" height="908" alt="Screenshot 2026-01-01 184104" src="https://github.com/user-attachments/assets/402f4761-50fb-42ea-8613-a35a2ee34aa8" />
+<img width="1916" height="900" alt="image" src="https://github.com/user-attachments/assets/f794f103-7cc2-4c80-8b71-01fa999f140d" />
+
 
 ---
 
